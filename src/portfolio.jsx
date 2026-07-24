@@ -158,6 +158,117 @@ function ProjectsList({ onSelect, onBack }) {
   );
 }
 
+// ─── CONTACT FORM ───
+function ContactForm() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+
+  const inputStyle = {
+    width: "100%", padding: "14px 16px", background: C.bg, border: `1px solid ${C.border}`,
+    borderRadius: 8, color: C.text, fontSize: 15, fontFamily: "inherit", outline: "none",
+    transition: "border-color 0.2s",
+  };
+
+  const handleFocus = (e) => { e.target.style.borderColor = C.accent; };
+  const handleBlur = (e) => { e.target.style.borderColor = C.border; };
+
+  const handleSubmit = async () => {
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) return;
+    setStatus("sending");
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/mgbidak@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          _subject: `Portfolio Contact: ${form.name}`,
+        }),
+      });
+      if (res.ok) {
+        setStatus("sent");
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      // Fallback: open mailto
+      const subject = encodeURIComponent(`Portfolio Contact: ${form.name}`);
+      const body = encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`);
+      window.open(`mailto:mgbidak@gmail.com?subject=${subject}&body=${body}`, "_blank");
+      setStatus("sent");
+      setForm({ name: "", email: "", message: "" });
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 40, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "32px 28px" }}>
+      <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Send me a message</h3>
+      <p style={{ color: C.textMuted, fontSize: 14, marginBottom: 24 }}>Fill out the form and I'll get back to you as soon as possible.</p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14, marginBottom: 14 }}>
+        <div>
+          <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: C.textMuted }}>Name</label>
+          <input
+            type="text" placeholder="Your name" style={inputStyle}
+            value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onFocus={handleFocus} onBlur={handleBlur}
+          />
+        </div>
+        <div>
+          <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: C.textMuted }}>Email</label>
+          <input
+            type="email" placeholder="your@email.com" style={inputStyle}
+            value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onFocus={handleFocus} onBlur={handleBlur}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: C.textMuted }}>Message</label>
+        <textarea
+          placeholder="Tell me about your project or just say hi..." rows={5}
+          style={{ ...inputStyle, resize: "vertical", minHeight: 120 }}
+          value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
+          onFocus={handleFocus} onBlur={handleBlur}
+        />
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <button
+          className="btn-primary"
+          onClick={handleSubmit}
+          disabled={status === "sending" || !form.name.trim() || !form.email.trim() || !form.message.trim()}
+          style={{
+            opacity: (!form.name.trim() || !form.email.trim() || !form.message.trim()) ? 0.4 : 1,
+            cursor: (!form.name.trim() || !form.email.trim() || !form.message.trim()) ? "not-allowed" : "pointer",
+          }}
+        >
+          {status === "sending" ? (
+            <><svg width="16" height="16" viewBox="0 0 16 16" style={{ animation: "spin 1s linear infinite" }}><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="8" /></svg> Sending...</>
+          ) : (
+            <>Send Message <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg></>
+          )}
+        </button>
+
+        {status === "sent" && (
+          <span style={{ color: C.green, fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={C.green} strokeWidth="2"><path d="M3 8l3.5 3.5L13 5" /></svg>
+            Message sent!
+          </span>
+        )}
+        {status === "error" && (
+          <span style={{ color: "#EF4444", fontSize: 14, fontWeight: 500 }}>
+            Something went wrong. Please try again or email directly.
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── BLOG POST DETAIL ───
 function BlogPost({ post, onBack }) {
   useEffect(() => { window.scrollTo({ top: 0 }); }, []);
@@ -395,7 +506,7 @@ export default function Portfolio() {
                   <span style={{ color:C.textMuted,fontSize:13,fontFamily:"'JetBrains Mono',monospace" }}>photo coming soon</span>
                 </div>
                 <div style={{ position:"absolute",bottom:-12,left:-12,padding:"8px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,fontSize:13,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace" }}>
-                  Chicago · UIC · 2030
+                  Chicago · UIC · 2029
                 </div>
               </div>
             </div>
@@ -526,6 +637,9 @@ export default function Portfolio() {
                   </a>
                 ))}
               </div>
+
+              {/* CONTACT FORM */}
+              <ContactForm />
             </section>
           </Reveal>
 
