@@ -506,7 +506,7 @@ export default function Portfolio() {
                   <span style={{ color:C.textMuted,fontSize:13,fontFamily:"'JetBrains Mono',monospace" }}>photo coming soon</span>
                 </div>
                 <div style={{ position:"absolute",bottom:-12,left:-12,padding:"8px 16px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,fontSize:13,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace" }}>
-                  Chicago · UIC · 2029
+                  Chicago · UIC · 2030
                 </div>
               </div>
             </div>
